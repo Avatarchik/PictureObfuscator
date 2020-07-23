@@ -53,7 +53,7 @@ struct ChangeSolu {
 
 int main()
 {
-	cout << "WELCOME TO <PicObfer> By Steesha. [Release:2020.7.22]" << endl;
+	cout << "WELCOME TO <PictureObfuscator> By Steesha. [Release:2020.7.22]" << endl;
 	cout << ">> Input your input-picture File. FileName:[e.g: C:\\MyFile.jpg]" << endl;
 	string inputFileName, outputFileName;//输入文件,输出文件
 	cin >> inputFileName;

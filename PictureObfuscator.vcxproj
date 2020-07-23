@@ -22,7 +22,7 @@
     <VCProjectVersion>16.0</VCProjectVersion>
     <Keyword>Win32Proj</Keyword>
     <ProjectGuid>{7fd778c9-8e72-4f11-91f0-89fd8c32b953}</ProjectGuid>
-    <RootNamespace>PicObfer</RootNamespace>
+    <RootNamespace>PictureObfuscator</RootNamespace>
     <WindowsTargetPlatformVersion>10.0</WindowsTargetPlatformVersion>
     <ProjectName>PictureObfuscator</ProjectName>
   </PropertyGroup>

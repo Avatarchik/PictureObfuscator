@@ -1,4 +1,4 @@
-# PicObfer
+# PictureObfuscator
 Obf A Pic Or DeObf A Pic.
 
 

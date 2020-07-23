@@ -106,7 +106,7 @@ int main()
 				if (count > (ExChangeMap.size() - 200)) {
 					cout << changeSol << "  " << ExChangeMap.size() << endl;
 				}
-				
+
 			}
 		}
 

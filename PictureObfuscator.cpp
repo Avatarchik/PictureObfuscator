@@ -1,3 +1,17 @@
+//==============================================================
+//  Copyright (C) 2020 Steeliest Org.. All rights reserved.
+//  The information contained herein is confidential, proprietary
+//  to Jeteam Inc. Use of this information by anyone other than 
+//  authorized employees of Jeteam Inc is granted only under a 
+//  written non-disclosure agreement, expressly prescribing the 
+//  scope and manner of such use.
+//==============================================================
+//  Create by Steesha at 2020.7.24.
+//  Version 1.0
+//  Steesha [steesha@qq.com]
+//  注：不建议使用管理员模式启动，否则将无法向控制台里面拖入文件
+//  用法：详见README.md
+//==============================================================
 #pragma comment(lib, "gdiplus.lib")
 #include <iostream>
 #include <fstream>
@@ -5,6 +19,7 @@
 #include <windows.h>
 #include <gdiplus.h>
 #include <vector>
+#include <time.h>
 using namespace std;
 using namespace Gdiplus;
 
@@ -20,6 +35,7 @@ Bitmap* Obfuscate(Bitmap* picture, int Rseed);//混淆图片
 Bitmap* Deobfuscate(Bitmap* picture, int Rseed);//反混淆图片
 void string_replace(std::string& strBig, const std::string& strsrc, const std::string& strdst);//文本替换
 std::string GetPathOrURLShortName(std::string strFullName, bool noformat);//文件路径取文件名
+int getRand(int min, int max);
 int main()
 {
 	system("title PictureObfuscator");
@@ -86,6 +102,7 @@ int main()
 	}
 	else {
 		cout << "SAVE PICTURE SUCCESSFUL AT  <" << outPath << ">" << endl;
+		cout << "picture seed is<" << pseed << ">" << endl;
 		cout << "Process Exit....." << endl;
 	}
 	//<-Save
@@ -168,15 +185,80 @@ int SavePicture(Bitmap* picture, string outputFile, FileFormat format)//保存�
 	return GetLastError();
 }
 
-Bitmap* Obfuscate(Bitmap* picture, int Rseed) {
+clock_t start_t = clock();//时钟
+
+int GetSeeds(int Rseed, vector<int>& TxSeed, vector<int>& TySeed, Bitmap* picture) {//返回lcounter
 	srand((int)Rseed);
-	cout << rand() << endl;
-	return nullptr;
+	int full = picture->GetHeight() * picture->GetWidth();
+	int lcounter = 0;
+	cout << "[Creating Seeds]" << "0.00" << "%" << endl;
+	for (UINT i = 0; i < picture->GetHeight(); i++) {
+		for (UINT j = 0; j < picture->GetWidth(); j++) {
+			TxSeed.push_back(getRand(0, picture->GetWidth()));
+			start_t = clock();
+			if (start_t % 100 == 0) {
+				cout << "[Creating Seeds]" << ((float)lcounter / full * 100) / 2 << "%" << endl;
+			}
+			lcounter++;
+		}
+		TySeed.push_back(getRand(0, picture->GetHeight()));
+	}
+	cout << "[Creating Seeds]" << "50.00" << "%" << endl;
+	return full / 2;
+}
+
+Bitmap* Obfuscate(Bitmap* picture, int Rseed) {
+	int full = picture->GetHeight() * picture->GetWidth();
+	vector<int> TxSeed, TySeed;//Transfer
+	GetSeeds(Rseed, TxSeed, TySeed, picture);
+	int lcounter = 0;
+	//ExChange
+	Color colorf; Color colors;
+	UINT height = picture->GetHeight(); UINT width = picture->GetWidth();
+	for (UINT y = 0; y < height; y++) {
+		for (UINT x = 0; x < width; x++) {
+			picture->GetPixel(x, y, &colorf);
+			picture->GetPixel(TxSeed[x], TySeed[y], &colors);
+			picture->SetPixel(x, y, colors);
+			picture->SetPixel(TxSeed[x], TySeed[y], colorf);
+			start_t = clock();
+			if (start_t % 100 == 0) {
+				cout << "[Obfuscate]" << 50.0 + ((float)lcounter / full * 100) / 2 << "%" << endl;
+			}
+			lcounter++;
+		}
+	}
+	cout << "[Obfuscate]" << "100.00" << "%" << endl;
+	cout << endl;
+	return picture;
 }
 
 Bitmap* Deobfuscate(Bitmap* picture, int Rseed) {
-	srand((int)Rseed);
-	return nullptr;
+	int full = picture->GetHeight() * picture->GetWidth();
+	vector<int> TxSeed, TySeed;//Transfer
+	GetSeeds(Rseed, TxSeed, TySeed, picture);
+	int lcounter = 0;
+	//ExChange
+	Color colorf, colors;
+	UINT height = picture->GetHeight(); UINT width = picture->GetWidth();
+	for (UINT i = 0; i < height; i++) {
+		for (UINT j = 0; j < width; j++) {
+			int x = width - j - 1;
+			int y = height - i - 1;
+			picture->GetPixel(x, y, &colorf);
+			picture->GetPixel(TxSeed[x], TySeed[y], &colors);
+			picture->SetPixel(x, y, colors);
+			picture->SetPixel(TxSeed[x], TySeed[y], colorf);
+			start_t = clock();
+			if (start_t % 100 == 0) {
+				cout << "[Deobfuscate]" << 50.0 + ((float)lcounter / full * 100) / 2 << "%" << endl;
+			}
+			lcounter++;
+		}
+	}
+	cout << "[Deobfuscate]" << "100.00" << "%" << endl;
+	cout << endl;
+	return picture;
 }
 
 void string_replace(std::string& strBig, const std::string& strsrc, const std::string& strdst)//文本替换
@@ -212,45 +294,7 @@ std::string GetPathOrURLShortName(std::string strFullName, bool noformat)//文�
 
 	return strFullName;
 }
-/*
-	vector<RgbRECT> Colors;
-	vector<ChangeSolu> ExChangeMap;
-	RgbRECT locrgb; ChangeSolu locslu;
-	for (UINT y = 0; y < height; y++)//遍历色块 x - y
-		for (UINT x = 0; x < width; x++) {
-			Status st = picture->GetPixel(x, y, &color);//获取图片像素信息
-			locrgb.col = color;
-			locrgb.Exchanged = false;
-			Colors.push_back(locrgb);
-			int unit1 = rand() % Colors.size();
-			int unit2 = rand() % Colors.size();
-			locslu.seed1 = unit1;
-			locslu.seed2 = unit2;
-			ExChangeMap.push_back(locslu);
-		}
-	cout << ExChangeMap.size() << endl;
-	srand((int)123456);
 
-	int count = 0;
-	for (UINT y = 0; y < height; y++)//交换色块 x - y
-		for (UINT x = 0; x < width; x++) {
-			//确保每一个元素被交换了
-			bool exchangedcomplete = false;
-			while (!exchangedcomplete) {
-				int changeSol1 = ExChangeMap[count].seed1;
-				int changeSol2 = ExChangeMap[count].seed2;
-				if (!Colors[changeSol1].Exchanged) {//确保seed1的每个像素被移动
-					picture->SetPixel(x, y, Colors[changeSol1].col);
-					picture->SetPixel(x, y, Colors[changeSol2].col);
-					exchangedcomplete = true;
-				}
-				count++;
-				if (count > (ExChangeMap.size() - 200)) {
-					cout << changeSol1 << "  " << ExChangeMap.size() << endl;
-				}
-
-			}
-		}
-
-
-*/
+int getRand(int min, int max) {
+	return min + (int)max * rand() / (RAND_MAX + 1);
+}

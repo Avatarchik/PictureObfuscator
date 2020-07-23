@@ -15,7 +15,7 @@
     </Filter>
   </ItemGroup>
   <ItemGroup>
-    <ClCompile Include="PicObfer.cpp">
+    <ClCompile Include="PictureObfuscator.cpp">
       <Filter>源文件</Filter>
     </ClCompile>
   </ItemGroup>

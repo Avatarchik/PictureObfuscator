@@ -55,7 +55,7 @@ int main(int argc, char* argv[])
 	string arg_input;
 	int arg_method = -1, arg_seed = -1;
 	for (int i = 0; i < argc; i++) {
-		if (i<= (argc - 1)) {
+		if (i< (argc - 1)) {
 			string str = argv[i];//必须得转换一下string
 			if (str == "--input") {
 				arg_input = argv[i + 1];

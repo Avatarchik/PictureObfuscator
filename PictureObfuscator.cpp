@@ -20,6 +20,7 @@
 #include <gdiplus.h>
 #include <vector>
 #include <time.h>
+#include <sstream> 
 using namespace std;
 using namespace Gdiplus;
 
@@ -65,8 +66,10 @@ int main(int argc, char* argv[])
 				arg_method = *argv[i + 1] - '0';
 				commandstart = true;
 			}
-			else if (str == "--seed") {
-				arg_seed = *argv[i + 1] - '0';
+			else if (str == "--seed"){
+				stringstream Seedstream;
+				Seedstream << argv[i + 1];
+				Seedstream >> arg_seed;
 				commandstart = true;
 			}
 		}

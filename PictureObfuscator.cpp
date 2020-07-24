@@ -7,7 +7,7 @@
 //  scope and manner of such use.
 //==============================================================
 //  Create by Steesha at 2020.7.24.
-//  Version 1.0
+//  Version 1.1
 //  Steesha [steesha@qq.com]
 //  注：不建议使用管理员模式启动，否则将无法向控制台里面拖入文件
 //  用法：详见README.md

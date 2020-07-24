@@ -20,5 +20,5 @@ Obf A Pic Or DeObf A Pic.
 
 ### 1.2新增特性：
 #### 可以通过命令行启动程序，进行自动化加密
-#### 命令行格式：--input <pictureFile> --method <1/0> --seed <seed>
+#### 命令行格式： --input < pictureFile > --method < 1/0 > --seed < Seed >
 #### <尖括号在输入时请去掉>

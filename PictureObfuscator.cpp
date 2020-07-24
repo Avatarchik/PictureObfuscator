@@ -55,7 +55,7 @@ int main(int argc, char* argv[])
 	string arg_input;
 	int arg_method = -1, arg_seed = -1;
 	for (int i = 0; i < argc; i++) {
-		if (i< (argc - 1)) {
+		if (i < (argc - 1)) {
 			string str = argv[i];//必须得转换一下string
 			if (str == "--input") {
 				arg_input = argv[i + 1];
@@ -76,7 +76,7 @@ int main(int argc, char* argv[])
 		cout << "------->>>Process start in command mode." << endl;
 		setConsoleColor(defaultColor);
 	}
-	else if(commandstart){
+	else if (commandstart) {
 		setConsoleColor(redColor);
 		cout << "COMMAND INVALID. Process Exit...." << endl;
 		cout << "Correct Command Format:" << endl << "--input <pictureFile> --method <1/0> --seed <seed>" << endl;
@@ -93,7 +93,7 @@ int main(int argc, char* argv[])
 	cout << "> By Steesha.[Release on 2020 Jul. 23rd]" << endl;
 	//<-Start
 	string inputFileName;
-	
+
 	if (!commandstart) {//Command Mode.
 		cout << ">> Input your Picture File. FileName:[e.g: C:\\MyFile.jpg]" << endl;
 		cout << ">>If your inputfile is:[e.g: C:\\MyFile.jpg], outputfile will be:[e.g: C:\\MyFile_(de)obfuscated.jpg]" << endl;
@@ -127,7 +127,7 @@ int main(int argc, char* argv[])
 		cout << "METHOD: " << endl << "[0]Obfuscate Picture" << endl << "[1]Deobfuscate Picture" << endl;
 		cin >> IsDeobfuscate;
 		cout << "YOU chose <" << (IsDeobfuscate ? "Deobfuscate" : "Obfuscate") << "Picture" << ">" << endl;
-		
+
 		cout << "---------------------------------------------------------------------------------------------------" << endl;
 	}
 	else {

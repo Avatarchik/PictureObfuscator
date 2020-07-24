@@ -36,6 +36,7 @@ Bitmap* Deobfuscate(Bitmap* picture, int Rseed);//反混淆图片
 void string_replace(std::string& strBig, const std::string& strsrc, const std::string& strdst);//文本替换
 std::string GetPathOrURLShortName(std::string strFullName, bool noformat);//文件路径取文件名
 int getRand(int min, int max);
+string getOutputName(string inputName, bool IsDeobfuscate);// e.g:  C:\MyFile.png -> C:\MyFile_Obfuscated.png / C:\MyFile_Deobfuscated.png
 int main()
 {
 	system("title PictureObfuscator");
@@ -86,9 +87,8 @@ int main()
 	//<-Process
 
 	//->Save
-	string outPath = inputFileName;
-	string fileshort = GetPathOrURLShortName(inputFileName, true);
-	string_replace(outPath, fileshort, fileshort + "_" + (IsDeobfuscate ? "Deobfuscated" : "Obfuscated"));
+	string outPath = inputFileName;//获取文件输出名
+	outPath = getOutputName(outPath, IsDeobfuscate);
 	cout << outPath << endl;
 	int save_ret = SavePicture(picture, outPath, PNG);
 	if (save_ret != 0) {
@@ -297,4 +297,11 @@ std::string GetPathOrURLShortName(std::string strFullName, bool noformat)//文�
 
 int getRand(int min, int max) {
 	return min + (int)max * rand() / (RAND_MAX + 1);
+}
+
+string getOutputName(string inputName, bool IsDeobfuscate) {// e.g:  C:\MyFile.png -> C:\MyFile_Obfuscated.png / C:\MyFile_Deobfuscated.png
+	string outPath = inputName;
+	string fileshort = GetPathOrURLShortName(outPath, true);
+	string_replace(outPath, fileshort, fileshort + "_" + (IsDeobfuscate ? "Deobfuscated" : "Obfuscated"));
+	return outPath;
 }

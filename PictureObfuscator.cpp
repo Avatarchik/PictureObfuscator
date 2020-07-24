@@ -23,26 +23,42 @@
 using namespace std;
 using namespace Gdiplus;
 
+//Struct & Enum & GlobalVar
 struct GDIStartupInfomation { GdiplusStartupInput input; ULONG_PTR token; };//GDI初始化信息(用于关闭)
 enum FileFormat { PNG, BMP, JPEG };//图片文件格式
+clock_t start_t = clock();//时钟
+const WORD defaultColor = FOREGROUND_INTENSITY | FOREGROUND_RED | FOREGROUND_GREEN | FOREGROUND_BLUE;
+const WORD redColor = FOREGROUND_INTENSITY | FOREGROUND_RED;
+const WORD greenColor = FOREGROUND_INTENSITY | FOREGROUND_GREEN;
+const WORD blueColor = FOREGROUND_INTENSITY | FOREGROUND_BLUE;
+//Struct & Enum & GlobalVar
 
+//Method
 GDIStartupInfomation StartupGDI();//初始化GDI
 void ShutdownGDI(GDIStartupInfomation info);//关闭GDI
 Bitmap* ReadInPicture(string inputFile);//读入图片文件
-int GetEncoderClsid(const WCHAR* format, CLSID* pClsid);
+int GetEncoderClsid(const WCHAR* format, CLSID* pClsid);//GetEncoderClsid（获取保存编码）
 int SavePicture(Bitmap* picture, string outputFile, FileFormat format);//保存图片，默认PNG，返回GetLastError的内容
 Bitmap* Obfuscate(Bitmap* picture, int Rseed);//混淆图片
 Bitmap* Deobfuscate(Bitmap* picture, int Rseed);//反混淆图片
 void string_replace(std::string& strBig, const std::string& strsrc, const std::string& strdst);//文本替换
 std::string GetPathOrURLShortName(std::string strFullName, bool noformat);//文件路径取文件名
-int getRand(int min, int max);
+int getRand(int min, int max);//获取范围随机数
 string getOutputName(string inputName, bool IsDeobfuscate);// e.g:  C:\MyFile.png -> C:\MyFile_Obfuscated.png / C:\MyFile_Deobfuscated.png
+void setConsoleColor(WORD Attri);
+//Method
+
 int main()
 {
+	
+	setConsoleColor(defaultColor);
 	system("title PictureObfuscator");
 	//->Start
-	cout << "---------------------------------------------------------------------------------------------------" << endl;
-	cout << "WELCOME TO <PictureObfuscator> By Steesha. [Release on 2020 Jul. 23rd]" << endl;
+	cout << "WELCOME TO<";
+	setConsoleColor(greenColor);
+	cout << "PictureObfuscator";
+	setConsoleColor(defaultColor);
+	cout << "> By Steesha.[Release on 2020 Jul. 23rd]" << endl;
 	cout << ">> Input your Picture File. FileName:[e.g: C:\\MyFile.jpg]" << endl;
 	cout << ">>If your inputfile is:[e.g: C:\\MyFile.jpg], outputfile will be:[e.g: C:\\MyFile_(de)obfuscated.jpg]" << endl;
 	//<-Start
@@ -61,13 +77,15 @@ int main()
 	UINT pic_height = picture->GetHeight();//获取图片高度
 	UINT pic_width = picture->GetWidth();//获取图片宽度
 	cout << "---------------------------------------------------------------------------------------------------" << endl;
+	setConsoleColor(blueColor);
 	cout << "Picture Info:" << endl;
 	cout << "---->Picture Height:" << pic_height << endl << "---->Picture Width:" << pic_width << endl;
+	setConsoleColor(defaultColor);
 	cout << "---------------------------------------------------------------------------------------------------" << endl;
 	//<-Read
 
 	//->Choose Method
-	bool IsDeobfuscate;
+	bool IsDeobfuscate;//是否进行反混淆操作 true->Deobf    false->Obf
 	cout << "METHOD: " << endl << "[0]Obfuscate Picture" << endl << "[1]Deobfuscate Picture" << endl;
 	cin >> IsDeobfuscate;
 	cout << "YOU chose <" << (IsDeobfuscate ? "Deobfuscate" : "Obfuscate") << "Picture" << ">" << endl;
@@ -83,9 +101,11 @@ int main()
 	system(IsDeobfuscate ? "title Deobfuscating" : "title Obfuscating");
 	system("cls");
 	//->Process
+	int protime = clock();
 	picture = IsDeobfuscate ? Deobfuscate(picture, pseed) : Obfuscate(picture, pseed);
+	protime = clock() - protime;
 	//<-Process
-
+	system("title PictureObfuscator Processed");
 	//->Save
 	string outPath = inputFileName;//获取文件输出名
 	outPath = getOutputName(outPath, IsDeobfuscate);
@@ -93,7 +113,9 @@ int main()
 	int save_ret = SavePicture(picture, outPath, PNG);
 	if (save_ret != 0) {
 		//Err
-		cout << "SAVE PICTURE ERROR, ERRORCODE <" << save_ret << ">" << endl;
+		setConsoleColor(redColor);
+		cout << "SAVE PICTURE Failed, ERRORCODE <" << save_ret << ">" << endl;
+		setConsoleColor(defaultColor);
 		cout << "Process Exit....." << endl;
 		ShutdownGDI(GdiInfo);//关闭GDI
 		delete picture;//DELETE
@@ -101,8 +123,16 @@ int main()
 		return -1;
 	}
 	else {
-		cout << "SAVE PICTURE SUCCESSFUL AT  <" << outPath << ">" << endl;
-		cout << "picture seed is<" << pseed << ">" << endl;
+		cout << "SAVE PICTURE ";
+		setConsoleColor(greenColor);
+		cout << "SUCCESSFUL";
+		setConsoleColor(defaultColor);
+		cout << " AT  <" << outPath << "> In <" << protime << "ms>" << endl;
+		cout << "picture seed is<";
+		setConsoleColor(redColor);
+		cout << pseed;
+		setConsoleColor(defaultColor);
+		cout << ">" << endl;
 		cout << "Process Exit....." << endl;
 	}
 	//<-Save
@@ -185,8 +215,6 @@ int SavePicture(Bitmap* picture, string outputFile, FileFormat format)//保存�
 	return GetLastError();
 }
 
-clock_t start_t = clock();//时钟
-
 int GetSeeds(int Rseed, vector<int>& TxSeed, vector<int>& TySeed, Bitmap* picture) {//返回lcounter
 	srand((int)Rseed);
 	int full = picture->GetHeight() * picture->GetWidth();
@@ -210,17 +238,18 @@ int GetSeeds(int Rseed, vector<int>& TxSeed, vector<int>& TySeed, Bitmap* pictur
 Bitmap* Obfuscate(Bitmap* picture, int Rseed) {
 	int full = picture->GetHeight() * picture->GetWidth();
 	vector<int> TxSeed, TySeed;//Transfer
+	//算法待优化
 	GetSeeds(Rseed, TxSeed, TySeed, picture);
 	int lcounter = 0;
 	//ExChange
-	Color colorf; Color colors;
+	Color color_old, color_new;
 	UINT height = picture->GetHeight(); UINT width = picture->GetWidth();
 	for (UINT y = 0; y < height; y++) {
 		for (UINT x = 0; x < width; x++) {
-			picture->GetPixel(x, y, &colorf);
-			picture->GetPixel(TxSeed[x], TySeed[y], &colors);
-			picture->SetPixel(x, y, colors);
-			picture->SetPixel(TxSeed[x], TySeed[y], colorf);
+			picture->GetPixel(x, y, &color_old);
+			picture->GetPixel(TxSeed[x], TySeed[y], &color_new);
+			picture->SetPixel(TxSeed[x], TySeed[y], color_old);
+			picture->SetPixel(x, y, color_new);
 			start_t = clock();
 			if (start_t % 100 == 0) {
 				cout << "[Obfuscate]" << 50.0 + ((float)lcounter / full * 100) / 2 << "%" << endl;
@@ -236,19 +265,20 @@ Bitmap* Obfuscate(Bitmap* picture, int Rseed) {
 Bitmap* Deobfuscate(Bitmap* picture, int Rseed) {
 	int full = picture->GetHeight() * picture->GetWidth();
 	vector<int> TxSeed, TySeed;//Transfer
+	//算法待优化
 	GetSeeds(Rseed, TxSeed, TySeed, picture);
 	int lcounter = 0;
 	//ExChange
-	Color colorf, colors;
+	Color color_old, color_new;
 	UINT height = picture->GetHeight(); UINT width = picture->GetWidth();
 	for (UINT i = 0; i < height; i++) {
 		for (UINT j = 0; j < width; j++) {
 			int x = width - j - 1;
 			int y = height - i - 1;
-			picture->GetPixel(x, y, &colorf);
-			picture->GetPixel(TxSeed[x], TySeed[y], &colors);
-			picture->SetPixel(x, y, colors);
-			picture->SetPixel(TxSeed[x], TySeed[y], colorf);
+			picture->GetPixel(x, y, &color_old);
+			picture->GetPixel(TxSeed[x], TySeed[y], &color_new);
+			picture->SetPixel(TxSeed[x], TySeed[y], color_old);
+			picture->SetPixel(x, y, color_new);
 			start_t = clock();
 			if (start_t % 100 == 0) {
 				cout << "[Deobfuscate]" << 50.0 + ((float)lcounter / full * 100) / 2 << "%" << endl;
@@ -304,4 +334,9 @@ string getOutputName(string inputName, bool IsDeobfuscate) {// e.g:  C:\MyFile.p
 	string fileshort = GetPathOrURLShortName(outPath, true);
 	string_replace(outPath, fileshort, fileshort + "_" + (IsDeobfuscate ? "Deobfuscated" : "Obfuscated"));
 	return outPath;
+}
+
+void setConsoleColor(WORD Attri)
+{
+	SetConsoleTextAttribute(GetStdHandle(STD_OUTPUT_HANDLE), Attri);
 }

@@ -26,7 +26,7 @@ using namespace Gdiplus;
 
 //Struct & Enum & GlobalVar
 struct GDIStartupInfomation { GdiplusStartupInput input; ULONG_PTR token; };//GDI初始化信息(用于关闭)
-enum FileFormat { PNG, BMP, JPEG };//图片文件格式
+enum class FileFormat { PNG = 0, BMP = 1, JPEG = 2 };//图片文件格式
 clock_t start_t = clock();//时钟
 const WORD defaultColor = FOREGROUND_INTENSITY | FOREGROUND_RED | FOREGROUND_GREEN | FOREGROUND_BLUE;
 const WORD redColor = FOREGROUND_INTENSITY | FOREGROUND_RED;
@@ -66,7 +66,7 @@ int main(int argc, char* argv[])
 				arg_method = *argv[i + 1] - '0';
 				commandstart = true;
 			}
-			else if (str == "--seed"){
+			else if (str == "--seed") {
 				stringstream Seedstream;
 				Seedstream << argv[i + 1];
 				Seedstream >> arg_seed;
@@ -163,7 +163,7 @@ int main(int argc, char* argv[])
 	string outPath = inputFileName;//获取文件输出名
 	outPath = getOutputName(outPath, IsDeobfuscate);
 	cout << outPath << endl;
-	int save_ret = SavePicture(picture, outPath, PNG);
+	int save_ret = SavePicture(picture, outPath, FileFormat::PNG);
 	if (save_ret != 0) {
 		//Err
 		setConsoleColor(redColor);
@@ -233,7 +233,7 @@ int GetEncoderClsid(const WCHAR* format, CLSID* pClsid)
 	}
 
 	GetImageEncoders(num, size, pImageCodecInfo);
-	for (UINT j = 0; j < num; ++j)
+	for (UINT j = 0; j < num; j++)
 	{
 		if (wcscmp(pImageCodecInfo[j].MimeType, format) == 0)
 		{
@@ -257,13 +257,13 @@ int SavePicture(Bitmap* picture, string outputFile, FileFormat format)//保存�
 {
 	CLSID pngClsid;
 	switch (format) {
-	case PNG:
+	case FileFormat::PNG:
 		GetEncoderClsid(L"image/png", &pngClsid);
 		break;
-	case BMP:
+	case FileFormat::BMP:
 		GetEncoderClsid(L"image/bmp", &pngClsid);
 		break;
-	case JPEG:
+	case FileFormat::JPEG:
 		GetEncoderClsid(L"image/jpeg", &pngClsid);
 		break;
 	}

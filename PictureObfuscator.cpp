@@ -25,7 +25,7 @@ using namespace std;
 using namespace Gdiplus;
 
 //Struct & Enum & GlobalVar
-struct GDIStartupInfomation { GdiplusStartupInput input; ULONG_PTR token; };//GDI初始化信息(用于关闭)
+struct GDIStartupInfomation { GdiplusStartupInput input; ULONG_PTR token = 0; };//GDI初始化信息(用于关闭)
 enum class FileFormat { PNG = 0, BMP = 1, JPEG = 2 };//图片文件格式
 clock_t start_t = clock();//时钟
 const WORD defaultColor = FOREGROUND_INTENSITY | FOREGROUND_RED | FOREGROUND_GREEN | FOREGROUND_BLUE;
@@ -93,7 +93,7 @@ int main(int argc, char* argv[])
 	setConsoleColor(greenColor);
 	cout << "PictureObfuscator";
 	setConsoleColor(defaultColor);
-	cout << "> By Steesha.[Release on 2020 Jul. 23rd]" << endl;
+	cout << "> By Steesha.[Release on 2020 Jul. 31st]" << endl;
 	//<-Start
 	string inputFileName;
 

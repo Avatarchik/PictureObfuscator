@@ -233,7 +233,7 @@ int GetEncoderClsid(const WCHAR* format, CLSID* pClsid)
 	}
 
 	GetImageEncoders(num, size, pImageCodecInfo);
-	for (UINT j = 0; j < num; j++)
+	for (UINT j = 0; j < size; j++)
 	{
 		if (wcscmp(pImageCodecInfo[j].MimeType, format) == 0)
 		{
